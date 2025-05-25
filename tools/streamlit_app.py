@@ -1,7 +1,5 @@
 import streamlit as st
-st.set_page_config(page_title="AllyIn AI Agent")  # ✅ Must be first Streamlit call
-
-
+st.set_page_config(page_title="AllyIn AI Agent")  
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -16,16 +14,9 @@ from tools.router_agent import agent
 from tools.logger import log_feedback
 import dashboards.metrics
 
-
-# -------------------------------
-# Title & Instructions
-# -------------------------------
 st.title("🤖 AllyIn AI Assistant")
 st.markdown("Ask a question based on the documents. The AI will try to respond using SQL, vector search, or graph tools.")
 
-# -------------------------------
-# Question Input
-# -------------------------------
 question = st.text_input("Enter your question")
 
 if question:
@@ -49,9 +40,6 @@ if question:
             st.error(f"❌ Error: {e}")
             response = None
 
-# -------------------------------
-# Feedback Section
-# -------------------------------
 if "last_response" in st.session_state:
     st.markdown("---")
     st.subheader("📣 Was this answer helpful?")
@@ -82,9 +70,6 @@ if "last_response" in st.session_state:
                 )
                 st.info("We'll review your feedback.")
 
-# -------------------------------
-# Sidebar Metrics Dashboard
-# -------------------------------
 st.sidebar.title("📊 Metrics Dashboard")
 
 feedback_file = "feedback_log.jsonl"
