@@ -1,0 +1,53 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+
+import os
+from langchain.agents import Tool, initialize_agent
+from langchain.agents.agent_types import AgentType
+from langchain.llms import OpenAI
+from retrievers.sql import run_sql_query
+from retrievers.vectors import semantic_search
+from retrievers.graph import run_graph_query  # make sure this is defined in graph.py
+
+
+os.environ["OPENAI_API_KEY"] = "YOUR API KEY HERE"  # <- Paste your real key here
+
+def sql_tool_func(query):
+    return run_sql_query(query)
+
+def vector_tool_func(query):
+    results = semantic_search(query)
+    return "\n\n".join([
+        f"Title: {doc.get('title', 'Untitled')}\nContent:\n{doc.get('text', '')}"
+        for doc in results
+    ])
+
+def graph_tool_func(query):
+    return run_graph_query(query)
+
+tools = [
+    Tool(name="SQLTool", func=sql_tool_func,
+         description="Use this for structured customer/order questions."),
+    Tool(name="VectorTool", func=vector_tool_func,
+         description="Use this for semantic search in documents or unstructured text."),
+    Tool(name="GraphTool", func=graph_tool_func,
+         description="Use this when the question involves people, companies, or relationships in documents.")
+]
+
+llm = OpenAI(temperature=0.2)
+agent = initialize_agent(
+    tools,
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=True,
+    max_iterations=10,         
+    max_execution_time=60   
+)
+
+
+if __name__ == "__main__":
+    query = "Which companies are mentioned in the document?"
+    print("\n🧠 Agent Response:")
+    print(agent.run(query))
