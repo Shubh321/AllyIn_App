@@ -71,4 +71,4 @@ for chunk in all_chunks[:3]:  # Preview first 3 chunks
 
 client.upsert(collection_name=collection_name, points=points)
 
-print(f"✅ Indexed {len(points)} document chunks into Qdrant.")
+print("Indexed {len(points)} document chunks into Qdrant.")
