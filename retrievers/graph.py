@@ -2,10 +2,8 @@ import json
 import spacy
 from neo4j import GraphDatabase
 
-# Load spaCy NLP model
 nlp = spacy.load("en_core_web_sm")
 
-# Connect to Neo4j (using local desktop or sandbox)
 driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "AllyInpwd"))
 
 def extract_entities(text):
@@ -33,7 +31,7 @@ def populate_graph_from_docs():  # <-- 🔁 Manual call
             entities = extract_entities(doc["body"])
             session.write_transaction(create_graph, doc["doc_id"], doc["title"], entities)
 
-    print("✅ Entities extracted and added to Neo4j.")
+    print("Entities extracted and added to Neo4j.")
 
 def run_graph_query(query):
     if "company" in query.lower() or "mention" in query.lower():
@@ -48,3 +46,6 @@ def run_graph_query(query):
                 for row in result
             ])
     return "Graph query not understood."
+
+if __name__ == "__main__":
+    populate_graph_from_docs()
